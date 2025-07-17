@@ -1,0 +1,2 @@
+with open('diary.txt', 'w') as file:
+  file.write('I love my gf soo much, Love you 4ever Camilla 💖!\n')

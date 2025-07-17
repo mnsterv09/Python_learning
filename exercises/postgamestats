@@ -1,0 +1,39 @@
+#Lets built a simple post game stats dataset
+
+#CRUZEIRO EC PLAYERS
+
+players_data = [
+{'name': 'Cassio', 'position': 'Goalkeeper', 'number': '1', 'goal': 0, 'assist': 0},
+
+{'name': 'Fabricio Bruno' , 'position': 'Defender' , 'number': '4', 'goal': 0, 'assist': 0},
+
+{'name': 'Matheus Pereira' , 'position': 'Central Midfielder' , 'number': '10', 'goal': 1, 'assist': 2},
+
+{'name': 'Lucas Romero' , 'position': 'Defensive Midfielder' , 'number': '29', 'goal': 1, 'assist': 1},
+
+{'name': 'Lucas Silva' , 'position': 'Center Midfielder' , 'number': '16', 'goal': 0, 'assist': 2},
+
+{'name': 'Kaio Jorge' , 'position': 'Striker' , 'number': '19', 'goal': 3, 'assist': 0},
+]
+
+names = [player['name'] for player in players_data]
+print('Players Names:', names)
+
+positions = [player['position'] for player in players_data]
+print('Players Positions:', positions)
+
+players_data[0]['goal'] += 1
+players_data[0]['assist'] += 1
+
+avarage_goals = sum(player['goal'] for player in players_data) / len(players_data)
+avarage_assist = sum(player['assist'] for player in players_data) / len(players_data)
+print('Average Goals Scores:', avarage_goals)
+print('Average Assist:', avarage_assist)
+
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+#Let's build a fruit cart to train sets
+
+## Fruit Cart
+myset_fruitlist = {'🍎 apple', '🍌 banana', '🍊 orange', '🍓 strawberry',}
+myset_friendfruitlist = {'🍓 strawberry', '🍒 cherry', '🍅 tomatoes', '🍌 banana',}
+
+union_result = myset_fruitlist.union(myset_friendfruitlist)
+diferrence_result = myset_fruitlist.difference(myset_friendfruitlist)
+
+print(union_result)
+print(diferrence_result)
+

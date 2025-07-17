@@ -1,0 +1,12 @@
+# coordenates by https://www.latlong.net/
+
+my_city = ('Belo Horizonte', '-19.917299', '-43.934559')
+biel_city = ('Tenerife', '28.291565', '-16.629129')
+sergin_city = ('Connecticut', '41.603222', '-73.087746')
+rod_city = ('Lagoa Santa', '-19.628330', '-43.896420')
+
+city = my_city[0], biel_city[0], sergin_city[0], rod_city[0]
+for item in city:
+  print(item)
+
+

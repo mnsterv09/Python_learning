@@ -1,0 +1,10 @@
+# all art info from https://www.metmuseum.org/art/collection/search/437455
+
+art_info = {'artist': 'Jusepe de Ribera called Lo Spagnoletto', 'period': '1591 - 1652', 'date': '1648'}
+
+print('Artist:', art_info['artist'])
+print('Period:', art_info['period'])
+print('Date:', art_info['date'])
+
+
+

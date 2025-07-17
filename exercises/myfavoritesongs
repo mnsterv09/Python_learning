@@ -1,0 +1,12 @@
+myfavorite_songs = {
+    'title': 'Onw my on' , 'artist': 'Three Days Grace',
+    'title': 'Devil in I' , 'artist': 'Slipknot',
+    'title': 'Crawling' , 'artist': 'Linkin Park',
+    'title': 'Sextape' , 'artist': 'Deftones',
+}
+
+def write_myfavorite_songs_to_file(myfavorite_songs, file_name):
+    with open(file_name, 'w') as file:
+        file.write('My favorite songs:\n')
+        for title, artist in myfavorite_songs():
+         file.write(f' {title} by {artist}\n')

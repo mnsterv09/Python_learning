@@ -1,0 +1,19 @@
+import csv
+
+item = None
+quantidade = 0
+
+data = [
+  ['Item', 'Quantidade'],
+  ['Liquidificador', 2],
+  ['Posters', 30],
+  ['Sapatos', 2]
+]
+
+with open('data.csv', 'r') as csv_file:
+    csv_reader = csv.reader('data.csv')
+    for row in csv_reader:
+        item = str(row[1])
+        quantidade = int(row[2])
+    print(f'Item: {item}, Quantidade: {quantidade}')
+    

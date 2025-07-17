@@ -1,0 +1,3 @@
+vinicius = ['animes', 'music', 'games', 'programming']
+for item in vinicius:
+    print(item)
