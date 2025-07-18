@@ -1,0 +1,96 @@
+import os
+import sys
+import time
+import ctypes
+from collections import defaultdict
+from scapy.all import sniff, IP, TCP
+
+THRESHOLD = 40  # Number of packets per second to trigger alert
+print("Mini Firewall started...")
+print(f"Monitoring traffic... (THRESHOLD: {THRESHOLD} packets/sec)")
+
+def read_ip_file(filename):
+    """Read IP addresses from a file and return a set."""
+    with open(filename, 'r') as file:
+        ips = [line.strip() for line in file]
+    return set(ips)
+
+whitelist_ips = read_ip_file("whitelist.txt") if os.path.exists("whitelist.txt") else set()
+blacklist_ips = read_ip_file("blacklist.txt") if os.path.exists("blacklist.txt") else set()
+
+def is_nimda_worm(packet):
+    """Check if the packet is part of the Nimda worm attack."""
+    if packet.haslayer(TCP) and packet[TCP].dport == 80:
+        payload = packet[TCP].payload
+        return "GET /scripts/root.exe" in str(payload) or "GET /default.ida" in str(payload)
+    return False
+
+def log_event(message):
+    """Log events to a file."""
+    log_folder = "logs"
+    os.makedirs(log_folder, exist_ok=True)
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    with open(os.path.join(log_folder, "firewall.log"), "a") as log_file:
+        log_file.write(f"[{timestamp}] {message}\n")
+
+packet_count = defaultdict(int)
+start_time = [time.time()]
+blocked_ips = set()
+
+def packet_callback(packet):
+    """Callback function to process each packet."""
+    if not packet.haslayer(IP):
+        return
+    src_ip = packet[IP].src
+    if src_ip in whitelist_ips:
+        return  # Ignore whitelisted IPs
+
+    if src_ip in blacklist_ips:
+        os.system(f"iptables -A INPUT -s {src_ip} -j DROP")
+        log_event(f"Blocked IP blacklisted: {src_ip}")
+        return
+
+    if is_nimda_worm(packet):
+        print(f"Blocking Nimda source IP: {src_ip}")
+        os.system(f"iptables -A INPUT -s {src_ip} -j DROP")
+        log_event(f"Nimda worm detected from {src_ip}")
+        return
+
+    packet_count[src_ip] += 1
+
+    current_time = time.time()
+    time_interval = current_time - start_time[0]
+    if time_interval >= 1:
+        for ip, count in packet_count.items():
+            packet_rate = count / time_interval
+            if packet_rate > THRESHOLD and ip not in blocked_ips:
+                print(f"Blocking IP {ip}, packet rate: {packet_rate} packets/sec")
+                os.system(f"iptables -A INPUT -s {ip} -j DROP")
+                log_event(f"Blocking IP {ip}, packet rate: {packet_rate} packets/sec")
+                blocked_ips.add(ip)
+        packet_count.clear()
+        start_time[0] = current_time
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        log_event(f"Packet rate checked at {timestamp}")
+
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+    
+if __name__ == "__main__":
+    if not is_admin() != 0:
+        print("This script must be run as root.")
+        sys.exit(1)
+    else:
+        if os.geteuid() != 0:
+            print("This script must be run as root.")
+            sys.exit(1)
+
+    whitelist_ips = read_ip_file("whitelist.txt") if os.path.exists("whitelist.txt") else set()
+    blacklist_ips = read_ip_file("blacklist.txt") if os.path.exists("blacklist.txt") else set()
+
+    print("Monitoring started...")
+    sniff(filter="ip", prn=packet_callback, store=0, count=0)
+    
