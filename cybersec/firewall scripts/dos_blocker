@@ -1,12 +1,14 @@
 import os
 import sys
 import time
+import ctypes
 from collections import defaultdict
 from scapy.all import sniff, IP
 
 THRESHOLD = 40
 print("Starting DoS Blocker...")
 print(f"THRESHOLD: {THRESHOLD} packets per second")
+
 
 def packet_callback(packet):
  src_ip = packet[IP].src
@@ -26,6 +28,16 @@ def packet_callback(packet):
   start_time[0] = current_time
 
 if __name__ == "__main__":
+ def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+ if __name__ == "__main__":
+    if os.name == "nt":
+        if not is_admin():
+            print("This script must be run as administrator.")
+            sys.exit(1)
  if os.getpid() != 0:
   print("This script must be run as root.")
   sys.exit(1)
