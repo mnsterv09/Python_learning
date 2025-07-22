@@ -1,0 +1,37 @@
+import sys
+import argparse
+import socket
+
+def get_service_banner(ip,port):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(3)
+            s.connect((ip, port))
+            s.send(b"GET/ HTTP/1.0\r\n Host: " + ip.encode() + b"\r\n\r\n")
+            banner = s.recv(1024).decode('utf-8', errors='ignore')
+            socket.close()
+            return banner.decode('utf-8', errors='ignore')
+    except Exception:
+        return None
+
+def main():
+    parser = argparse.ArgumentParser(description='Service Banner Scanner')
+    parser.add_argument('ip', type=str, help='IP address to scan')
+    parser.add_argument('-p', '--ports', required=True, help='Port number to connect to (comma-separated list)')
+    
+    args = parser.parse_args()
+    
+    ip = argrs.ip
+    ports = [port.strip() for port in args.ports.split(',')]
+
+    print(f"Scanning IP: {ip} on ports: {', '.join(ports)}")
+    for port in ports:
+        print(f"Checking port {port}...")
+        banner = get_service_banner(ip, int(port))
+        if banner:
+            print(f"Service banner for port {port} on IP {ip}: \n{banner}\n")
+        else:
+            print(f"No service banner found for port {port} on IP {ip}´\n.")
+if __name__ == "__main__":
+    main()
+   
