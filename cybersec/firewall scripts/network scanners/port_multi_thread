@@ -21,7 +21,7 @@ def main():
     
     args = parser.parse_args()
     
-    ip = argrs.ip
+    ip = args.ip
     ports = [port.strip() for port in args.ports.split(',')]
 
     print(f"Scanning IP: {ip} on ports: {', '.join(ports)}")
