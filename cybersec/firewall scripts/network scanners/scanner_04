@@ -1,4 +1,5 @@
 import  os
+from numpy import mask
 from scapy.all import ICMP, IP, sr1, TCP, sr
 from ipaddress import ip_network
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -17,10 +18,10 @@ def ping_sweep(network, netmask):
 
     num_threads = os.cpu_count() * 2  # Adjust based on system capabilities
     host = list(ip_network(network + '/' + netmask).hosts())
-    total_hosts = len(hosts)
+    total_hosts = len(host)
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
-        futures = {executor.submit(ping, host): host for host in hosts}
+        futures = {executor.submit(ping, host): host for host in host}
         for i, future in enumerate(as_completed(futures), start=1):
           host = futures[future]
           result = future.result()
@@ -54,21 +55,17 @@ def port_scan(ip, ports):
                 open_ports.append(result)
     return open_ports
 
-live_hosts = ping_sweep(network, netmask)
-
-host_port_maping = {}
-ports = range(1, 1025)  # Common ports to scan
-for host in live_hosts:
-    open_ports = port_scan(host, ports)
-    host_port_maping[host] = open_ports
-
-print(host_port_maping)
 
 if __name__ == "__main__":
     import sys
     network = sys.argv[1]
     netmask = sys.argv[2]
-    host_port_maping = get_live_hosts_and_ports(network, netmask)
-    for host, ports in host_port_maping.items():
+    live_hosts = ping_sweep(network, netmask)
+    host_port_maping = {}
+    ports = range(1, 1025)  # Common ports to scan
+    for host in live_hosts:
+        open_ports = port_scan(host, ports)
+        host_port_maping[host] = open_ports
+    for host, open_ports in host_port_maping.items():
         print(f"Host: {host}, has the following open ports: {open_ports}")
                 
